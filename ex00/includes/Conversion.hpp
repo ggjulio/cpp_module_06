@@ -6,7 +6,7 @@
 /*   By: juligonz <juligonz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/15 10:05:37 by juligonz          #+#    #+#             */
-/*   Updated: 2021/02/15 11:08:07 by juligonz         ###   ########.fr       */
+/*   Updated: 2021/02/15 11:22:25 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ Conversion::Conversion(const std::string &input)
 		_isChar = true;
 		_char = input.c_str()[0];
 	}
-	// int
+	else
 	{
 		char *end = NULL;
 		_int = std::strtod(input.c_str(), &end);
@@ -117,7 +117,6 @@ std::ostream& operator<<(std::ostream &os, const Conversion &c){
 		os << c.isDouble() << std::endl;
 	else
 		os << "Non displayable" << std::endl;
-  
 
 	return os;
 }
