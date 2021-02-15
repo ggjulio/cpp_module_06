@@ -6,7 +6,7 @@
 /*   By: juligonz <juligonz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/15 10:05:37 by juligonz          #+#    #+#             */
-/*   Updated: 2021/02/15 11:22:25 by juligonz         ###   ########.fr       */
+/*   Updated: 2021/02/15 19:50:23 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,16 @@
 #define CONVERSION_H
 
 #include <string>
+#include <sstream>
 #include <ostream>
 #include <cstdlib>
 #include <cctype>
+#include <iomanip>
 
 class Conversion
 {
 private:
+	long double _input;
 	char _char;
 	int _int;
 	float _float;
@@ -34,9 +37,22 @@ private:
 	Conversion();
 	Conversion(const Conversion &);
 	Conversion & operator=(const Conversion &);
+
+	void _fromChar(const std::string &);
+	void _fromDouble(const std::string &);
+	
+	template<typename T>
+	void _castAll(T n){
+		_char = static_cast<char>(n);
+		_int = static_cast<int>(n);
+		_float = static_cast<float>(n);
+		_double = static_cast<double>(n);
+	}
+	
 public:
 	Conversion(const std::string &);
 	~Conversion();
+
 
 	char 	getChar(void) const;
 	int	 	getInt(void) const;
@@ -60,25 +76,31 @@ std::ostream& operator<<(std::ostream &os, const Conversion &);
 Conversion::Conversion(const std::string &input)
 : _char(0), _int(0), _float(0), _double(0), _isChar(0), _isInt(0), _isFloat(0), _isDouble(0)
 {
+	std::istringstream iss(input);
 	// Char
 	if (input.size() == 1 && isalpha(input[0]))
 	{
 		_isChar = true;
-		_char = input.c_str()[0];
+		_input = input.c_str()[0];
 	}
 	else
 	{
-		char *end = NULL;
-		_int = std::strtod(input.c_str(), &end);
-		if (end)
-			_isInt = true;
+		
+		iss >> _input;
+		if (!iss.fail())
+			;
+		// _float = atof(input.c_str());
+	}	
+	// decimal
+	{
+		// _int = std::strtod(input.c_str(), &end);
 		
 	}
-	// double
-	{
-		_float = atof(input.c_str());
-		_isFloat = true;
-	}
+	_castAll(_input);
+	_isFloat = true;
+	_isInt = true;
+	_isChar = true;
+	_isDouble = true;
 }
 
 Conversion::~Conversion(){}
@@ -114,7 +136,7 @@ std::ostream& operator<<(std::ostream &os, const Conversion &c){
 
 	os << "double: ";
 	if (c.isDouble())
-		os << c.isDouble() << std::endl;
+		os << c.getDouble() << std::endl;
 	else
 		os << "Non displayable" << std::endl;
 
