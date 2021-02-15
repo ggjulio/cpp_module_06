@@ -6,59 +6,47 @@
 /*   By: juligonz <juligonz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/15 11:49:06 by juligonz          #+#    #+#             */
-/*   Updated: 2021/02/15 15:12:54 by juligonz         ###   ########.fr       */
+/*   Updated: 2021/02/15 15:56:46 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <string>
 #include <iostream>
 #include <cstdlib>
-#include <cctype>
-
 
 struct Data {
 	std::string s1;
 	int n;
 	std::string s2;
 } __attribute__ ((packed));
-// __attribute__ ((packed))
-// typedef Data packedString;
-
-std::string getRandom8chars(void)
-{
-	std::string result;
-
-	srand(time(0));
-	
-	for (size_t i = 0; i < 8; i++)
-		result[i] =	rand() % 74 + '0';
-	return result;
-}
-
 
 void * serialize(void){
 	Data *d = new Data;
 
 	srand(time(0));
-
-	d->s1 = "01234567";
-	d->n = rand() % 43;
-	d->s2 = "abcdefgh";
 	
+	d->s1 = std::string(8,0);
+	d->s2 = std::string(8,0);
+	for (size_t i = 0; i < 8; i++)
+		d->s1[i] = rand() % 74 + '0';
+	d->n = rand() % 22 + 21;
+	for (size_t i = 0; i < 8; i++)
+		d->s2[i] = rand() % 74 + '0';
 	return (d);
 }
 
 Data * deserialize(void * raw){
-	Data *result = new Data;
-
-	*result = *reinterpret_cast<Data*>(raw);
-	return	result;
+	return reinterpret_cast<Data*>(raw);
 }
 
 int main(){
 	std::cout << "sizeof(std::string):" << sizeof(std::string) << std::endl;
-	// std::cout << "sizeof(std::string) :" << sizeof(packedString) << std::endl;
-	std::cout << "sizeof(Date):" << sizeof(Data) << std::endl;
+	std::cout << "sizeof(Date):" << sizeof(Data) << std::endl << std::endl;
 
+	Data *d = deserialize(serialize());
+
+	std::cout << "s1:" << d->s1 << std::endl
+		<< "n:" << d->n << std::endl
+		<< "s2:" << d->s2 << std::endl;
 	return 0;
 }
