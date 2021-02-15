@@ -6,7 +6,7 @@
 /*   By: juligonz <juligonz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/15 11:49:06 by juligonz          #+#    #+#             */
-/*   Updated: 2021/02/15 15:12:22 by juligonz         ###   ########.fr       */
+/*   Updated: 2021/02/15 15:12:54 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@
 
 struct Data {
 	std::string s1;
-	std::string s2;
 	int n;
-}; //__attribute__ ((packed));
+	std::string s2;
+} __attribute__ ((packed));
 // __attribute__ ((packed))
 // typedef Data packedString;
 
