@@ -6,13 +6,14 @@
 /*   By: juligonz <juligonz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/15 16:18:49 by juligonz          #+#    #+#             */
-/*   Updated: 2021/02/15 17:03:34 by juligonz         ###   ########.fr       */
+/*   Updated: 2021/02/15 17:18:54 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <exception>
 #include <typeinfo>
+#include <cstdlib>
 
 class Base
 {
@@ -25,6 +26,7 @@ class A: public Base {};
 class B: public Base {};
 class C: public Base {};
 
+Base * generate(void);
 void identify_from_pointer(Base * p);
 void identify_from_reference(Base & p);
 
@@ -32,12 +34,25 @@ int main(){
 	Base *a = new A();
 	Base *b = new B();
 	Base *c = new C();
+	Base *base = new Base();
+	Base *random = generate();
+	Base *random2 = generate();
+
 	identify_from_pointer(a);
 	identify_from_pointer(b);
 	identify_from_pointer(c);
+	identify_from_pointer(base);
+
 	identify_from_reference(*a);
 	identify_from_reference(*b);
 	identify_from_reference(*c);
+	identify_from_reference(*base);
+
+
+	identify_from_pointer(random);
+	identify_from_reference(*random);
+	identify_from_pointer(random2);
+	identify_from_reference(*random2);
 	return 0;
 }
 
@@ -72,4 +87,21 @@ void identify_from_reference(Base & p)
 		return;
 	}catch(std::bad_cast &e){}
 	std::cout << "Oups ! you can't do that !" << std::endl;
+}
+
+template<typename T>
+Base * newDerived(void){
+	return new T();
+}
+
+Base * generate(void){
+	static bool seeded;
+	Base * (*funcs[])(void) = {	newDerived<A>, newDerived<B>, newDerived<C>};
+
+	if (!seeded)
+	{
+		srand(time(0));
+		seeded = true;
+	}
+	return (funcs[rand() % 3])();
 }
