@@ -6,7 +6,7 @@
 /*   By: juligonz <juligonz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/15 11:49:06 by juligonz          #+#    #+#             */
-/*   Updated: 2021/02/15 15:06:30 by juligonz         ###   ########.fr       */
+/*   Updated: 2021/02/15 15:07:05 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 struct Data {
 	std::string s1;
 	int n;
-	int n2;
 	std::string s2;
 } __attribute__ ((packed));
 // __attribute__ ((packed))
