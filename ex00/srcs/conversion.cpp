@@ -6,7 +6,7 @@
 /*   By: juligonz <juligonz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/15 10:05:22 by juligonz          #+#    #+#             */
-/*   Updated: 2021/02/17 00:09:36 by juligonz         ###   ########.fr       */
+/*   Updated: 2021/02/17 00:12:06 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,11 +80,11 @@ void Conversion::_fromFloat(const std::string &input){
 	float inputFloat;
 	
 	_isNan = true;
-	if (!input.compare("-inf"))
+	if (!input.compare("-inff"))
 		inputFloat = -INFINITY;
-	else if (!input.compare("+inf"))
+	else if (!input.compare("+inff"))
 		inputFloat = INFINITY;
-	else if (!input.compare("nan"))
+	else if (!input.compare("nanf"))
 		inputFloat = NAN;
 	else
 	{
