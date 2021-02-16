@@ -6,7 +6,7 @@
 /*   By: juligonz <juligonz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/15 10:05:37 by juligonz          #+#    #+#             */
-/*   Updated: 2021/02/16 22:44:35 by juligonz         ###   ########.fr       */
+/*   Updated: 2021/02/17 00:06:22 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,14 @@
 class Conversion
 {
 private:
-	double _inputDbl;
-	int _inputInt;
-	bool _inputFromDouble;
-
-	bool _isNan;
-	
-	bool _fail;
-
 	char _char;
 	int _int;
 	float _float;
 	double _double;
+
+	bool _isNan;
+	bool _inputFromDouble;
+	bool _fail;
 
 	Conversion();
 	Conversion(const Conversion &);
@@ -40,6 +36,10 @@ private:
 		_float = static_cast<float>(n);
 		_double = static_cast<double>(n);
 	}
+	
+	void _fromFloat(const std::string &);
+	void _fromDouble(const std::string &);
+	void _fromInt(const std::string &);
 	
 public:
 	Conversion(const std::string &);
