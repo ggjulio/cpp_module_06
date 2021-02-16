@@ -6,7 +6,7 @@
 /*   By: juligonz <juligonz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/15 10:05:37 by juligonz          #+#    #+#             */
-/*   Updated: 2021/02/15 19:50:23 by juligonz         ###   ########.fr       */
+/*   Updated: 2021/02/16 20:45:11 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,31 +15,35 @@
 
 #include <string>
 #include <sstream>
-#include <ostream>
+#include <iostream>
 #include <cstdlib>
 #include <cctype>
+#include <cmath>
+#include <climits>
+#include <cfloat>
 #include <iomanip>
+#include <exception>
+#include <stdexcept>
 
 class Conversion
 {
 private:
-	long double _input;
+	double _inputDbl;
+	int _inputInt;
+	bool _inputFromDouble;
+
+	bool _isNan;
+	
+	bool _fail;
+
 	char _char;
 	int _int;
 	float _float;
 	double _double;
 
-	bool _isChar;
-	bool _isInt;
-	bool _isFloat;
-	bool _isDouble;
-	
 	Conversion();
 	Conversion(const Conversion &);
 	Conversion & operator=(const Conversion &);
-
-	void _fromChar(const std::string &);
-	void _fromDouble(const std::string &);
 	
 	template<typename T>
 	void _castAll(T n){
@@ -53,93 +57,140 @@ public:
 	Conversion(const std::string &);
 	~Conversion();
 
-
 	char 	getChar(void) const;
 	int	 	getInt(void) const;
 	float 	getFloat(void) const;
 	double 	getDouble(void) const;
 
-	bool	isChar(void) const;
-	bool	isInt(void) const;
-	bool	isFloat(void) const;
-	bool	isDouble(void) const;
+	bool 	isNan(void) const;
+	bool 	fail(void) const;
+
 };
 
 std::ostream& operator<<(std::ostream &os, const Conversion &);
 
 #endif
 
-// #######################################################
-
 // #include "Conversion.hpp"
 
 Conversion::Conversion(const std::string &input)
-: _char(0), _int(0), _float(0), _double(0), _isChar(0), _isInt(0), _isFloat(0), _isDouble(0)
+: _inputFromDouble(0), _isNan(0), _fail(0), _char(0), _int(0), _float(0), _double(0)
 {
-	std::istringstream iss(input);
+	std::istringstream ist(input);
 	// Char
-	if (input.size() == 1 && isalpha(input[0]))
+	if (input.size() == 1 && input[0] != '0')
+		_inputInt = input.c_str()[0];
+	// double
+	else if (input.find('.') != std::string::npos
+		|| !input.compare("-inff") || !input.compare("-inf") || !input.compare("+inff")
+		|| !input.compare("+inf")  || !input.compare("nanf")  || !input.compare("nan"))
 	{
-		_isChar = true;
-		_input = input.c_str()[0];
+		_isNan = true;
+		if (!input.compare("-inff") || !input.compare("-inf"))
+			_inputDbl = -INFINITY;
+		else if (!input.compare("+inff") || !input.compare("+inf"))
+			_inputDbl = INFINITY;
+		else if (!input.compare("nanf") || !input.compare("nan"))
+			_inputDbl = NAN;
+		else
+		{
+			ist >> _inputDbl;
+			_isNan = false;
+		}
+		if (!ist)
+			_fail = true;
+		_inputFromDouble = 1;
+		_castAll(_inputDbl);
+		return ;
 	}
-	else
+	else // Integer
 	{
-		
-		iss >> _input;
-		if (!iss.fail())
-			;
-		// _float = atof(input.c_str());
-	}	
-	// decimal
-	{
-		// _int = std::strtod(input.c_str(), &end);
-		
+		ist >> _inputInt;
+		if (!ist)
+			_fail = true;
 	}
-	_castAll(_input);
-	_isFloat = true;
-	_isInt = true;
-	_isChar = true;
-	_isDouble = true;
+	_castAll(_inputInt);
 }
 
 Conversion::~Conversion(){}
 
-char Conversion::getChar(void)		const { return _char;}
-int Conversion::getInt(void)		const { return _int;}
-float Conversion::getFloat(void)	const { return _float;}
-double Conversion::getDouble(void)	const { return _double;}
+char Conversion::getChar(void)		const {
+	if (getInt() < CHAR_MIN || _int > CHAR_MAX)
+		throw std::overflow_error("Char overfow");
+	return _char;
+}
+float Conversion::getFloat(void)	const {
+	if ((long long int)getDouble() > FLT_MAX_EXP ||  (long long int)_double < FLT_MIN_EXP)
+		throw std::overflow_error("Float Overflow");
+	return _float;
+}
+int Conversion::getInt(void)		const {
+	if (_inputFromDouble)
+		getDouble();
+	if (_fail || ((_inputInt > INT_MAX || _inputInt < INT_MIN) && !_inputFromDouble))
+		throw std::overflow_error("Integer Overflow");
+	return _int;
+}
+double Conversion::getDouble(void)	const {
+	if (_fail || (long long int)_double > DBL_MAX_EXP ||  (long long int)_double < DBL_MIN_EXP)
+		throw std::overflow_error("Double Overflow");
+	return _double;
+}
 
-bool Conversion::isChar(void)		const { return _isChar;}
-bool Conversion::isInt(void) 		const { return _isInt;}
-bool Conversion::isFloat(void) 		const { return _isFloat;}
-bool Conversion::isDouble(void)		const { return _isDouble;}
+bool Conversion::isNan(void)	const { return _isNan;}
+bool Conversion::fail(void)		const { return _fail;}
 
 std::ostream& operator<<(std::ostream &os, const Conversion &c){
-	os << "char: ";
-	if (c.isChar())
-		os << c.getChar() << std::endl;
-	else
-		os << "Non displayable" << std::endl;
+	std::string trailing_zero;
+
+	if (c.fail())
+		return os << "Dude, stop trying overflow. Or giving bad args" << std::endl;
+
+	os << "char: " << std::setprecision(20);
+	try{
+		if (c.isNan())
+			os << "impossible" << std::endl;
+		else if (std::isprint(c.getChar()))
+			os << c.getChar() << std::endl;
+		else
+			os << "Non displayable" << std::endl;
+	}
+	catch (std::overflow_error &e)
+	{
+		os << "overflow" << std::endl;
+	}
+	
 
 	os << "int: ";
-	if (c.isInt())
-		os << c.getInt() << std::endl;
-	else
-		os << "Non displayable" << std::endl;
-
+	try{
+		if (c.isNan())
+			os << "impossible" << std::endl;
+		else
+			os << c.getInt() << std::endl;
+	}
+	catch (std::overflow_error &e){
+		os << "overflow" << std::endl;
+	}
+	
 	os << "float: ";
-	if (c.isFloat())
-		os << c.getFloat() << std::endl;
-	else
-		os << "Non displayable" << std::endl;
+	try{
+		trailing_zero = c.getFloat() - static_cast<int>(c.getFloat()) ? "":  ".0";
+		os << c.getFloat() << trailing_zero << "f" << std::endl;
+	}
+	catch (std::overflow_error &e){
+		os << "overflow" << std::endl;
+	}
+
 
 	os << "double: ";
-	if (c.isDouble())
-		os << c.getDouble() << std::endl;
-	else
-		os << "Non displayable" << std::endl;
-
+	try{
+		trailing_zero = c.getDouble() - static_cast<int>(c.getDouble()) ? "":  ".0";
+		os << c.getDouble() << trailing_zero << std::endl;
+	}
+	catch (std::overflow_error &e){
+		os << "overflow" << std::endl;
+	}
+	
 	return os;
 }
 
