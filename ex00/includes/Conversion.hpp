@@ -6,7 +6,7 @@
 /*   By: juligonz <juligonz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/15 10:05:37 by juligonz          #+#    #+#             */
-/*   Updated: 2021/02/16 20:45:11 by juligonz         ###   ########.fr       */
+/*   Updated: 2021/02/16 22:34:32 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ Conversion::Conversion(const std::string &input)
 {
 	std::istringstream ist(input);
 	// Char
-	if (input.size() == 1 && input[0] != '0')
+	if (input.size() == 1 && !isdigit(input[0]))
 		_inputInt = input.c_str()[0];
 	// double
 	else if (input.find('.') != std::string::npos
@@ -120,19 +120,26 @@ char Conversion::getChar(void)		const {
 	return _char;
 }
 float Conversion::getFloat(void)	const {
-	if ((long long int)getDouble() > FLT_MAX_EXP ||  (long long int)_double < FLT_MIN_EXP)
-		throw std::overflow_error("Float Overflow");
+	// if (!_isNan && ((long long int)getDouble() > FLT_MAX_EXP ||  (long long int)_double < FLT_MIN_EXP))
+	// if (!_isNan && (getDouble() > FLT_MAX || fabs(_double) < FLT_MIN))
+		// throw std::overflow_error("Float Overflow");
 	return _float;
 }
 int Conversion::getInt(void)		const {
 	if (_inputFromDouble)
-		getDouble();
+	{
+		long long n = getDouble();
+		if (~n || n > INT_MAX || n < INT_MIN)
+			throw std::overflow_error("Integer Overflow");
+	}
 	if (_fail || ((_inputInt > INT_MAX || _inputInt < INT_MIN) && !_inputFromDouble))
 		throw std::overflow_error("Integer Overflow");
 	return _int;
 }
 double Conversion::getDouble(void)	const {
-	if (_fail || (long long int)_double > DBL_MAX_EXP ||  (long long int)_double < DBL_MIN_EXP)
+	// if (_fail || (!_isNan && ((long long int)_double > DBL_MAX_EXP ||  (long long int)_double < DBL_MIN_EXP)))
+	// if (_fail || (!_isNan && (_double > DBL_MAX ||  fabs(_double) < DBL_MIN)))
+	if (_fail)
 		throw std::overflow_error("Double Overflow");
 	return _double;
 }
@@ -144,13 +151,13 @@ std::ostream& operator<<(std::ostream &os, const Conversion &c){
 	std::string trailing_zero;
 
 	if (c.fail())
-		return os << "Dude, stop trying overflow. Or giving bad args" << std::endl;
+		return os << "Dude, stop trying overflow. Or giving bad args... Annoying :-( ... the goal is just to do some static cast :-)" << std::endl;
 
 	os << "char: " << std::setprecision(20);
 	try{
 		if (c.isNan())
 			os << "impossible" << std::endl;
-		else if (std::isprint(c.getChar()))
+		else if (std::isgraph(c.getChar()))
 			os << c.getChar() << std::endl;
 		else
 			os << "Non displayable" << std::endl;
