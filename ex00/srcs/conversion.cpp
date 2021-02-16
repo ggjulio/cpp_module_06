@@ -6,7 +6,7 @@
 /*   By: juligonz <juligonz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/15 10:05:22 by juligonz          #+#    #+#             */
-/*   Updated: 2021/02/17 00:07:06 by juligonz         ###   ########.fr       */
+/*   Updated: 2021/02/17 00:09:36 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,6 @@ int Conversion::getInt(void)		const {
 	long long n = getDouble();
 	if (_fail || (_inputFromDouble && (n > INT_MAX || n < INT_MIN)))
 		throw std::overflow_error("Integer Overflow");
-	// if (_fail)// || ((_inputInt > INT_MAX || _inputInt < INT_MIN) && !_inputFromDouble))
-		// throw std::overflow_error("Integer Overflow");
 	return _int;
 }
 double Conversion::getDouble(void)	const {
@@ -134,7 +132,8 @@ std::ostream& operator<<(std::ostream &os, const Conversion &c){
 
 	if (c.fail())
 		return os << "Dude, stop trying overflow. Or giving bad args... Annoying :-( ... the goal is just to do some static cast :-)" << std::endl;
-os << std::setprecision(10);
+	
+	os << std::setprecision(10);
 	os << "char: ";
 		try{
 			if (c.isNan())
