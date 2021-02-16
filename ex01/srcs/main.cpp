@@ -6,7 +6,7 @@
 /*   By: juligonz <juligonz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/15 11:49:06 by juligonz          #+#    #+#             */
-/*   Updated: 2021/02/15 15:56:46 by juligonz         ###   ########.fr       */
+/*   Updated: 2021/02/17 00:32:44 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,5 +48,6 @@ int main(){
 	std::cout << "s1:" << d->s1 << std::endl
 		<< "n:" << d->n << std::endl
 		<< "s2:" << d->s2 << std::endl;
+	delete d;
 	return 0;
 }

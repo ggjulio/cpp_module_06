@@ -6,7 +6,7 @@
 /*   By: juligonz <juligonz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/15 16:18:49 by juligonz          #+#    #+#             */
-/*   Updated: 2021/02/15 17:18:54 by juligonz         ###   ########.fr       */
+/*   Updated: 2021/02/17 00:35:22 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,12 @@ int main(){
 	identify_from_reference(*random);
 	identify_from_pointer(random2);
 	identify_from_reference(*random2);
+	delete a;
+	delete b;
+	delete c;
+	delete base;
+	delete random;
+	delete random2;
 	return 0;
 }
 
